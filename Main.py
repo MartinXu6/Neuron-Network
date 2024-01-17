@@ -1,4 +1,5 @@
 import numpy
+import math
 
 
 class Neuron:
@@ -9,10 +10,23 @@ class Neuron:
         self.bias = bias
         pass
 
-    def calculate(self):
-        return numpy.dot(self.inputs, self.weights) + self.bias
+    def ReLu(self):
+        num = numpy.dot(self.inputs, self.weights) + self.bias
+        return 0 if num <= 0 else num
+
+    def forward_pass(self):
+        return self.ReLu()
 
 
-class Neuron_layers:
+class Neuron_layer:
     def __init__(self):
         pass
+
+    def Softmax(self,outputs):
+        divider = sum([math.e**i for i in outputs])
+        return [math.e**i/divider for i in outputs]
+
+    
+n1 = Neuron_layer
+print(n1.Softmax([1.3,5.1,2.2,0.7,1.1]))
+
