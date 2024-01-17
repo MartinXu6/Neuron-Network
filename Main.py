@@ -26,7 +26,7 @@ class Neuron_layer:
         divider = sum([math.e**i for i in outputs])
         return [math.e**i/divider for i in outputs]
 
-
+    
 n1 = Neuron_layer()
 print(n1.Softmax([1.3,5.1,2.2,0.7,1.1]))
 
