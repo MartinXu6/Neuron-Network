@@ -32,14 +32,16 @@ class Neuron_layer:
 
     def get_output(self):
         ans = self.ReLU()
-        neurons = [Neuron(ans,random.uniform(-0.5,0.5)).forward_pass() for i in range(len(self.inputs))]
+        neurons = [Neuron(ans, random.uniform(-0.5, 0.5)).forward_pass() for i in range(len(self.inputs))]
         return neurons
 
     def get_prediction(self):
         ans = self.ReLU()
-        neurons = [Neuron(ans,random.uniform(-0.5,0.5)).forward_pass() for i in range(2)]
+        neurons = [Neuron(ans, random.uniform(-0.5, 0.5)).forward_pass() for i in range(2)]
         return neurons
 
+
+# extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron network
 
 input_pixels = []
 for row in range(640):
@@ -47,10 +49,10 @@ for row in range(640):
         input_pixels.append(pixels[row, col])
 input_pixels = [i / 100 for tup in input_pixels for i in tup]
 input_neurons = len(input_pixels)
-
-Input_layer = Neuron_layer(input_pixels, [random.uniform(-1,0.5) for i in range(input_neurons)])
-Hidden1 = Neuron_layer(Input_layer.get_output(), [random.uniform(-1,0.5) for k in range(input_neurons)])
-Hidden2 = Neuron_layer(Hidden1.get_output(), [random.uniform(-1,0.5) for x in range(input_neurons)])
-Hidden3 = Neuron_layer(Hidden2.get_output(), [random.uniform(-1,0.5) for j in range(input_neurons)])
-prediction = Hidden3.Softmax(Hidden3.get_prediction())
-print(prediction)
+for i in range(100):
+    Input_layer = Neuron_layer(input_pixels, [random.uniform(-1, 0.5) for i in range(input_neurons)])
+    Hidden1 = Neuron_layer(Input_layer.get_output(), [random.uniform(-1, 0.5) for k in range(input_neurons)])
+    Hidden2 = Neuron_layer(Hidden1.get_output(), [random.uniform(-1, 0.5) for x in range(input_neurons)])
+    Hidden3 = Neuron_layer(Hidden2.get_output(), [random.uniform(-1, 0.5) for j in range(input_neurons)])
+    prediction = Hidden3.Softmax(Hidden3.get_prediction())
+    print(prediction)
