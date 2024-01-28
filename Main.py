@@ -6,7 +6,7 @@ from PIL import Image
 
 # extracting Image RGB values
 image = Image.open(r"D:\pycharm projects\Neuron-Network\images\cat1.jpg")
-label = 0
+label = [0,1]
 image.thumbnail((200, 200))
 pixels = image.load()
 
@@ -37,11 +37,11 @@ class Neuron_layer:
         divider = sum([math.e ** i for i in outputs])
         return [math.e ** i / divider for i in outputs]
 
-    def dSigmoid(self):
+    def dReLU(self):
         return
 
     def get_cost(self):
-        return
+        return - np.sum(np.log(predictions) * label)
 
     def get_dcost(self):
         return
@@ -72,7 +72,5 @@ Hidden3 = Neuron_layer(Hidden2.get_output(), 2)
 predictions = Hidden3.get_prediction()
 print(predictions)
 # training
-one_hot = [0, 0]
-one_hot[label] = 1
-cost = - np.sum(np.log(predictions) * one_hot)
+cost = - np.sum(np.log(predictions) * label)
 print(cost)
