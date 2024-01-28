@@ -6,7 +6,7 @@ from PIL import Image
 
 # extracting Image RGB values
 image = Image.open(r"D:\pycharm projects\Neuron-Network\images\cat1.jpg")
-label = [0,1]
+label = 0
 image.thumbnail((200, 200))
 pixels = image.load()
 
@@ -17,31 +17,42 @@ class Neuron:
         self.weights = weights
         self.bias = random.uniform(-0.5, 0.5)
 
-    def Sigmoid(self, value):
-        return 1 / (1 + math.e ** (value * -1))
+    def ReLU(self, value):
+        return max(0, value)
 
     def forward_pass(self):
         num = np.dot(self.connected, self.weights) + self.bias
-        return self.Sigmoid(num)
+        return self.ReLU(num)
 
 
 class Neuron_layer:
-    def __init__(self, inputs, neuron_num):
-        self.inputs = inputs
+    def __init__(self, input_neurons, neuron_num):
+        self.input_neurons = input_neurons
         self.neuron_num = neuron_num
-        self.weights = [[random.uniform(-0.3, 0.3) for j in range(len(self.inputs))] for i in range(self.neuron_num)]
+        self.weights = [[random.uniform(-0.5, 0.5) for j in range(len(self.input_neurons))] for i in
+                        range(self.neuron_num)]
+        self.neurons = [Neuron(self.input_neurons, self.weights[i]) for i in range(self.neuron_num)]
 
     def Softmax(self, outputs):
         divider = sum([math.e ** i for i in outputs])
         return [math.e ** i / divider for i in outputs]
 
-    def get_output(self):
-        neurons = [Neuron(self.inputs, self.weights[i]).forward_pass() for i in range(self.neuron_num)]
-        return neurons
+    def dSigmoid(self):
+        return
 
-    # def get_prediction(self):
-    #     neurons = [Neuron(self.inputs, self.weights[i]).forward_pass() for i in range(self.neuron_num)]
-    #     return self.Softmax(neurons)
+    def get_cost(self):
+        return
+
+    def get_dcost(self):
+        return
+
+    def get_output(self):
+        output_neurons = [neuron.forward_pass() for neuron in self.neurons]
+        return output_neurons
+
+    def get_prediction(self):
+        output_neurons = [neuron.forward_pass() for neuron in self.neurons]
+        return self.Softmax(output_neurons)
 
 
 # extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron network
@@ -52,13 +63,16 @@ for row in range(image.size[0]):
         input_pixels.append(pixels[row, col])
 
 input_pixels = [i / 1000 for tup in input_pixels for i in tup]
-input_neurons = len(input_pixels)
+# input_neurons = len(input_pixels)
 # network initialisation
 input_layer = Neuron_layer(input_pixels, 50)
 Hidden1 = Neuron_layer(input_layer.get_output(), 50)
 Hidden2 = Neuron_layer(Hidden1.get_output(), 50)
 Hidden3 = Neuron_layer(Hidden2.get_output(), 2)
-predictions = Hidden3.get_output()
+predictions = Hidden3.get_prediction()
 print(predictions)
 # training
-
+one_hot = [0, 0]
+one_hot[label] = 1
+cost = - np.sum(np.log(predictions) * one_hot)
+print(cost)
