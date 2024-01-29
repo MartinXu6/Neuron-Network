@@ -33,7 +33,8 @@ class Neuron:
         self.connected = connected
         self.weights = weights
         self.bias = random.uniform(-1, 1)
-        self.activation = self.Sigmoid(np.dot(self.connected, self.weights))
+        self.z = np.dot(self.connected, self.weights)
+        self.activation = self.Sigmoid(self.z)
 
     def Sigmoid(self, value):
         return 1 / (1 + math.e ** (value * -1))
@@ -43,8 +44,7 @@ class Neuron_layer:
     def __init__(self, input_neurons, neuron_num, weights):
         self.input_neurons = input_neurons
         self.neuron_num = neuron_num
-        self.weights = [[random.uniform(-0.5, 0.5) for j in range(len(self.input_neurons))] for i in
-                        range(self.neuron_num)]
+        self.weights = weights
         self.neurons = [Neuron(self.input_neurons, self.weights[i]) for i in range(self.neuron_num)]
 
     def Softmax(self, outputs):
@@ -70,12 +70,6 @@ class Neural_Network:
         self.out = self.Hidden3.get_output()
 
 
-# network initialisation
-Network = Neural_Network(input_pixels)
-predictions = Network.out
-print(predictions)
-
-
 # training
 def dcdw(y, y_hat, z, a):
     dc_dyhat = 2 * (y - y_hat)
@@ -84,11 +78,26 @@ def dcdw(y, y_hat, z, a):
     return dc_dyhat * dyhat_dz * dzdw
 
 
-def back_propagation(output_value, true_value, weights):
-    cost = [(label[i] - output_value[i]) ** 2 for i in range(2)]
-    for curr_neuron in Network.Hidden3.neurons:
-        for prev_neuron in Network.Hidden2.neurons:
-            return
+def dcda(y, y_hat, z, w):
+    dc_dyhat = 2 * (y - y_hat)
+    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z - 1))
+    dzda = w
+    return dc_dyhat * dyhat_dz * dzda
 
 
-back_propagation(predictions, label, weight_matrix)
+# network initialisation
+Network = Neural_Network(input_pixels)
+predictions = Network.out
+print(predictions)
+# back_propagation
+cost = [(label[i] - predictions[i]) ** 2 for i in range(2)]
+for curr_neuron in range(len(Network.Hidden3.neurons)):
+    for prev_neuron in range(len(Network.Hidden2.neurons)):
+        gradient = dcdw(label[curr_neuron], predictions[curr_neuron], Network.Hidden3.neurons[curr_neuron].z,
+                        Network.Hidden2.neurons[prev_neuron].activation)
+        if gradient >= 0.001:
+            weight_matrix[3][curr_neuron][prev_neuron] -= 0.01
+        elif gradient <= -0.001:
+            weight_matrix[3][curr_neuron][prev_neuron] += 0.01
+        a_gradient = dcda(label[curr_neuron], predictions[curr_neuron], Network.Hidden3.neurons[curr_neuron].z,
+                          weight_matrix[3][curr_neuron][prev_neuron])
