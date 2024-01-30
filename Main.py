@@ -3,12 +3,14 @@ import pandas as pd
 import math
 import random
 from PIL import Image
+from export import export
 
 # extracting Image RGB values
 image = Image.open(r"images/cat1.jpg")
 label = [0, 1]
 image.thumbnail((200, 200))
 pixels = image.load()
+
 # extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron network
 input_pixels = []
 for row in range(image.size[0]):
@@ -16,6 +18,7 @@ for row in range(image.size[0]):
         input_pixels.append(pixels[row, col])
 
 input_pixels = [i / 1000 for tup in input_pixels for i in tup]
+
 # stored weights
 weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(len(input_pixels))] for i in
                   range(50)],
@@ -26,6 +29,8 @@ weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(len(input_pixels))] 
                  [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
                   range(2)]
                  ]
+
+export(weight_matrix)
 
 
 class Neuron:
@@ -93,6 +98,7 @@ def dcda(y, y_hat, z, w):
 Network = Neural_Network(input_pixels)
 predictions = Network.out
 print(predictions)
+
 # back_propagation
 cost = [(label[i] - predictions[i]) ** 2 for i in range(2)]
 for curr_neuron in range(len(Network.Hidden3.neurons)):
