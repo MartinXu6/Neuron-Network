@@ -5,7 +5,7 @@ import random
 from PIL import Image
 
 # extracting Image RGB values
-image = Image.open(r"D:\pycharm projects\Neuron-Network\images\cat1.jpg")
+image = Image.open(r"images\cat1.jpg")
 label = [0, 1]
 image.thumbnail((200, 200))
 pixels = image.load()
@@ -101,3 +101,4 @@ for curr_neuron in range(len(Network.Hidden3.neurons)):
             weight_matrix[3][curr_neuron][prev_neuron] += 0.01
         a_gradient = dcda(label[curr_neuron], predictions[curr_neuron], Network.Hidden3.neurons[curr_neuron].z,
                           weight_matrix[3][curr_neuron][prev_neuron])
+
