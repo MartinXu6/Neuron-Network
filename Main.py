@@ -30,8 +30,6 @@ weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(len(input_pixels))] 
                   range(2)]
                  ]
 
-export(weight_matrix)
-
 
 class Neuron:
     def __init__(self, connected, weights):
@@ -94,20 +92,57 @@ def dcda(y, y_hat, z, w):
     return dc_dyhat * dyhat_dz * dzda
 
 
+def back_propagation(current_layer, prev_layer, true_value, predictions, index):
+    new_a = []
+    for curr_neuron in range(len(current_layer)):
+        for prev_neuron in range(len(prev_layer)):
+            gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
+                            prev_layer[prev_neuron].activation)
+            if gradient >= 0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
+            elif gradient <= -0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
+            a_gradient = dcda(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
+                              weight_matrix[index][curr_neuron][prev_neuron])
+            if a_gradient >= 0.001:
+                new_a.append(prev_layer[prev_neuron].activation + 0.01)
+            elif a_gradient <= -0.001:
+                new_a.append(prev_layer[prev_neuron].activation - 0.01)
+            else:
+                new_a.append(prev_layer[prev_neuron].activation)
+    return new_a
+
+
+def discarding_back_propagation(current_layer, prev_layer, true_value, predictions, index):
+    for curr_neuron in range(len(current_layer)):
+        for prev_neuron in range(len(prev_layer)):
+            gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
+                            prev_layer[prev_neuron])
+            if gradient >= 0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
+            elif gradient <= -0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
+
+
 # network initialisation
 Network = Neural_Network(input_pixels)
-predictions = Network.out
-print(predictions)
-
+overall_prediction = Network.out
+print(overall_prediction)
 # back_propagation
-cost = [(label[i] - predictions[i]) ** 2 for i in range(2)]
-for curr_neuron in range(len(Network.Hidden3.neurons)):
-    for prev_neuron in range(len(Network.Hidden2.neurons)):
-        gradient = dcdw(label[curr_neuron], predictions[curr_neuron], Network.Hidden3.neurons[curr_neuron].z,
-                        Network.Hidden2.neurons[prev_neuron].activation)
-        if gradient >= 0.001:
-            weight_matrix[3][curr_neuron][prev_neuron] -= 0.01
-        elif gradient <= -0.001:
-            weight_matrix[3][curr_neuron][prev_neuron] += 0.01
-        a_gradient = dcda(label[curr_neuron], predictions[curr_neuron], Network.Hidden3.neurons[curr_neuron].z,
-                          weight_matrix[3][curr_neuron][prev_neuron])
+label = [1, 0]
+cost = sum([(label[i] - overall_prediction[i]) ** 2 for i in range(2)])/2
+print(cost)
+
+for i in range(100):
+    cost1 = back_propagation(
+        Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
+    cost2 = back_propagation(
+        Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
+    cost3 = back_propagation(
+        Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(), 1)
+    discarding_back_propagation(Network.input_layer.neurons,
+                                input_pixels, cost3, Network.input_layer.get_output(), 0)
+    Network1 = Neural_Network(input_pixels)
+    print(f"Network_output{i}:", Network1.out)
+    print("cost=", sum(
+        [(label[i] - Network1.out[i]) ** 2 for i in range(2)])/2)
