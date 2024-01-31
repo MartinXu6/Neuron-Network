@@ -3,6 +3,7 @@ import pandas as pd
 import math
 import random
 from PIL import Image
+import json
 
 # extracting Image RGB values
 image = Image.open(r"images\cat1.jpg")
@@ -16,15 +17,8 @@ for row in range(image.size[0]):
 
 input_pixels = [i / 1000 for tup in input_pixels for i in tup]
 # stored weights
-weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(len(input_pixels))] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(2)]
-                 ]
+file = open("weights.json")
+weight_matrix = json.load(file)
 
 
 class Neuron:
@@ -119,17 +113,15 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
 # network initialisation
 Network = Neural_Network(input_pixels)
 overall_prediction = Network.out
-print(overall_prediction)
 # back_propagation
-label = [1,0]
-cost = sum([(label[i] - overall_prediction[i]) ** 2 for i in range(2)])/2
-print(cost)
+label = [1, 0]
 
 for i in range(100):
     cost1 = back_propagation(Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
     cost2 = back_propagation(Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
-    cost3 = back_propagation(Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(), 1)
+    cost3 = back_propagation(Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(),
+                             1)
     discarding_back_propagation(Network.input_layer.neurons, input_pixels, cost3, Network.input_layer.get_output(), 0)
-    Network1 = Neural_Network(input_pixels)
-    print(f"Network_output{i}:",Network1.out)
-    print("cost=",sum([(label[i] - Network1.out[i]) ** 2 for i in range(2)])/2)
+    Network = Neural_Network(input_pixels)
+    print(f"Network_output{i}:", Network.out)
+    print("cost=", sum([(label[i] - Network.out[i]) ** 2 for i in range(2)]) / 2)
