@@ -3,11 +3,15 @@ import pandas as pd
 import math
 import random
 from PIL import Image
+from export import export
 
 # extracting Image RGB values
-image = Image.open(r"images\cat1.jpg")
+
+image = Image.open(r"images/cat1.jpg")
+label = [0, 1]
 image.thumbnail((200, 200))
 pixels = image.load()
+
 # extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron network
 input_pixels = []
 for row in range(image.size[0]):
@@ -15,6 +19,7 @@ for row in range(image.size[0]):
         input_pixels.append(pixels[row, col])
 
 input_pixels = [i / 1000 for tup in input_pixels for i in tup]
+
 # stored weights
 weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(len(input_pixels))] for i in
                   range(50)],
@@ -44,7 +49,8 @@ class Neuron_layer:
         self.input_neurons = input_neurons
         self.neuron_num = neuron_num
         self.weights = weights
-        self.neurons = [Neuron(self.input_neurons, self.weights[i]) for i in range(self.neuron_num)]
+        self.neurons = [Neuron(self.input_neurons, self.weights[i])
+                        for i in range(self.neuron_num)]
 
     def Softmax(self, outputs):
         divider = sum([math.e ** i for i in outputs])
@@ -63,9 +69,12 @@ class Neural_Network:
     def __init__(self, picture):
         self.picture = picture
         self.input_layer = Neuron_layer(self.picture, 50, weight_matrix[0])
-        self.Hidden1 = Neuron_layer(self.input_layer.get_output(), 50, weight_matrix[1])
-        self.Hidden2 = Neuron_layer(self.Hidden1.get_output(), 50, weight_matrix[2])
-        self.Hidden3 = Neuron_layer(self.Hidden2.get_output(), 2, weight_matrix[3])
+        self.Hidden1 = Neuron_layer(
+            self.input_layer.get_output(), 50, weight_matrix[1])
+        self.Hidden2 = Neuron_layer(
+            self.Hidden1.get_output(), 50, weight_matrix[2])
+        self.Hidden3 = Neuron_layer(
+            self.Hidden2.get_output(), 2, weight_matrix[3])
         self.out = self.Hidden3.get_output()
 
 
@@ -117,19 +126,27 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
 
 
 # network initialisation
+
 Network = Neural_Network(input_pixels)
 overall_prediction = Network.out
 print(overall_prediction)
 # back_propagation
-label = [1,0]
+
+label = [1, 0]
 cost = sum([(label[i] - overall_prediction[i]) ** 2 for i in range(2)])/2
 print(cost)
 
 for i in range(100):
-    cost1 = back_propagation(Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
-    cost2 = back_propagation(Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
-    cost3 = back_propagation(Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(), 1)
-    discarding_back_propagation(Network.input_layer.neurons, input_pixels, cost3, Network.input_layer.get_output(), 0)
+    cost1 = back_propagation(
+        Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
+    cost2 = back_propagation(
+        Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
+    cost3 = back_propagation(
+        Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(), 1)
+    discarding_back_propagation(Network.input_layer.neurons,
+                                input_pixels, cost3, Network.input_layer.get_output(), 0)
     Network1 = Neural_Network(input_pixels)
-    print(f"Network_output{i}:",Network1.out)
-    print("cost=",sum([(label[i] - Network1.out[i]) ** 2 for i in range(2)])/2)
+    print(f"Network_output{i}:", Network1.out)
+    print("cost=", sum(
+        [(label[i] - Network1.out[i]) ** 2 for i in range(2)])/2)
+
