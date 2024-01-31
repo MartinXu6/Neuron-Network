@@ -91,15 +91,15 @@ def back_propagation(current_layer, prev_layer, true_value, predictions, index):
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron].activation)
             if gradient >= 0.001:
-                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
-            elif gradient <= -0.001:
                 weight_matrix[index][curr_neuron][prev_neuron] += 0.01
+            elif gradient <= -0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
             a_gradient = dcda(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                               weight_matrix[index][curr_neuron][prev_neuron])
             if a_gradient >= 0.001:
-                new_a.append(prev_layer[prev_neuron].activation - 0.01)
-            elif a_gradient <= -0.001:
                 new_a.append(prev_layer[prev_neuron].activation + 0.01)
+            elif a_gradient <= -0.001:
+                new_a.append(prev_layer[prev_neuron].activation - 0.01)
             else:
                 new_a.append(prev_layer[prev_neuron].activation)
     return new_a
@@ -111,9 +111,9 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron])
             if gradient >= 0.001:
-                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
-            elif gradient <= -0.001:
                 weight_matrix[index][curr_neuron][prev_neuron] += 0.01
+            elif gradient <= -0.001:
+                weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
 
 
 # network initialisation
@@ -121,7 +121,7 @@ Network = Neural_Network(input_pixels)
 overall_prediction = Network.out
 print(overall_prediction)
 # back_propagation
-label = [0, 1]
+label = [1,0]
 cost = sum([(label[i] - overall_prediction[i]) ** 2 for i in range(2)])/2
 print(cost)
 
