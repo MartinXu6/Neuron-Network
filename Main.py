@@ -6,6 +6,7 @@ from PIL import Image
 from export import export
 
 # extracting Image RGB values
+
 image = Image.open(r"images/cat1.jpg")
 label = [0, 1]
 image.thumbnail((200, 200))
@@ -125,10 +126,12 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
 
 
 # network initialisation
+
 Network = Neural_Network(input_pixels)
 overall_prediction = Network.out
 print(overall_prediction)
 # back_propagation
+
 label = [1, 0]
 cost = sum([(label[i] - overall_prediction[i]) ** 2 for i in range(2)])/2
 print(cost)
@@ -146,3 +149,4 @@ for i in range(100):
     print(f"Network_output{i}:", Network1.out)
     print("cost=", sum(
         [(label[i] - Network1.out[i]) ** 2 for i in range(2)])/2)
+
