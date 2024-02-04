@@ -84,15 +84,15 @@ def back_propagation(current_layer, prev_layer, true_value, predictions, index):
         for prev_neuron in range(len(prev_layer)):
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron].activation)
-            if gradient >= 0.001:
+            if gradient >= 0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] += 0.01
-            elif gradient <= -0.001:
+            elif gradient <= -0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
             a_gradient = dcda(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                               weight_matrix[index][curr_neuron][prev_neuron])
-            if a_gradient >= 0.001:
+            if a_gradient >= 0.0001:
                 new_a.append(prev_layer[prev_neuron].activation + 0.01)
-            elif a_gradient <= -0.001:
+            elif a_gradient <= -0.0001:
                 new_a.append(prev_layer[prev_neuron].activation - 0.01)
             else:
                 new_a.append(prev_layer[prev_neuron].activation)
@@ -104,9 +104,9 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
         for prev_neuron in range(len(prev_layer)):
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron])
-            if gradient >= 0.001:
+            if gradient >= 0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] += 0.01
-            elif gradient <= -0.001:
+            elif gradient <= -0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
 
 
@@ -120,7 +120,7 @@ for i in range(100):
     cost1 = back_propagation(Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
     cost2 = back_propagation(Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
     cost3 = back_propagation(Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(),
-                             1)
+                            1)
     discarding_back_propagation(Network.input_layer.neurons, input_pixels, cost3, Network.input_layer.get_output(), 0)
     Network = Neural_Network(input_pixels)
     print(f"Network_output{i}:", Network.out)
