@@ -65,15 +65,15 @@ class Neural_Network:
 
 # training
 def dcdw(y, y_hat, z, a):
-    dc_dyhat = 2 * (y - y_hat)
-    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z - 1))
+    dc_dyhat = -2 * (y - y_hat)
+    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z *- 1))
     dzdw = a
     return dc_dyhat * dyhat_dz * dzdw
 
 
 def dcda(y, y_hat, z, w):
-    dc_dyhat = 2 * (y - y_hat)
-    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z - 1))
+    dc_dyhat = -2 * (y - y_hat)
+    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z *- 1))
     dzda = w
     return dc_dyhat * dyhat_dz * dzda
 
@@ -85,15 +85,15 @@ def back_propagation(current_layer, prev_layer, true_value, predictions, index):
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron].activation)
             if gradient >= 0.0001:
-                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
-            elif gradient <= -0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
+            elif gradient <= -0.0001:
+                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
             a_gradient = dcda(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                               weight_matrix[index][curr_neuron][prev_neuron])
             if a_gradient >= 0.0001:
-                new_a.append(prev_layer[prev_neuron].activation + 0.01)
-            elif a_gradient <= -0.0001:
                 new_a.append(prev_layer[prev_neuron].activation - 0.01)
+            elif a_gradient <= -0.0001:
+                new_a.append(prev_layer[prev_neuron].activation + 0.01)
             else:
                 new_a.append(prev_layer[prev_neuron].activation)
     return new_a
