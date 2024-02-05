@@ -105,9 +105,9 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
             gradient = dcdw(true_value[curr_neuron], predictions[curr_neuron], current_layer[curr_neuron].z,
                             prev_layer[prev_neuron])
             if gradient >= 0.0001:
-                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
-            elif gradient <= -0.0001:
                 weight_matrix[index][curr_neuron][prev_neuron] -= 0.01
+            elif gradient <= -0.0001:
+                weight_matrix[index][curr_neuron][prev_neuron] += 0.01
 
 
 # network initialisation
