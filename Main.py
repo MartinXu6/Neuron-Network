@@ -8,16 +8,16 @@ import json
 
 # stored weights
 file = open("weights.json","r")
-weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(67500)] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(50)],
-                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
-                  range(2)]
-                 ]
-# weight_matrix = json.load(file)
+# weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(67500)] for i in
+#                   range(50)],
+#                  [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+#                   range(50)],
+#                  [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+#                   range(50)],
+#                  [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+#                   range(2)]
+#                  ]
+weight_matrix = json.load(file)
 
 
 class Neuron:
@@ -110,7 +110,7 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
 
 
 # extracting Image RGB values
-for num in range(0):
+for num in range(1,101):
     if num % 2 == 0:
         img = Image.open(f"catsndogs/dataset/training_set/dogs/dog.{num}.jpg")
         label = [0,1]
@@ -139,7 +139,7 @@ for num in range(0):
     discarding_back_propagation(Network.input_layer.neurons, input_pixels, cost3, Network.input_layer.get_output(), 0)
     Network = Neural_Network(input_pixels)
     print(f"Network_output{num}:", Network.out)
-    print("cost=", sum([(label[i] - Network.out[i]) ** 2 for i in range(2)]) / 2)
-file = open("weights.json","w")
-file.truncate()
-json.dump(weight_matrix,file)
+    print("cost=", sum([(label[i] - Network.out[i]) ** 2 for i in range(2)]) / 2,"label = ",label)
+    file = open("weights.json","w")
+    file.truncate()
+    json.dump(weight_matrix,file)
