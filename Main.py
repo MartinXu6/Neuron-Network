@@ -1,3 +1,4 @@
+
 import numpy as np
 import pandas as pd
 import math
@@ -5,20 +6,18 @@ import random
 from PIL import Image
 import json
 
-# extracting Image RGB values
-image = Image.open(r"images\cat1.jpg")
-image.thumbnail((200, 200))
-pixels = image.load()
-# extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron network
-input_pixels = []
-for row in range(image.size[0]):
-    for col in range(image.size[1]):
-        input_pixels.append(pixels[row, col])
-
-input_pixels = [i / 1000 for tup in input_pixels for i in tup]
 # stored weights
-file = open("weights.json")
-weight_matrix = json.load(file)
+file = open("weights.json","r")
+weight_matrix = [[[random.uniform(-0.5, 0.5) for j in range(67500)] for i in
+                  range(50)],
+                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+                  range(50)],
+                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+                  range(50)],
+                 [[random.uniform(-0.5, 0.5) for j in range(50)] for i in
+                  range(2)]
+                 ]
+# weight_matrix = json.load(file)
 
 
 class Neuron:
@@ -66,14 +65,14 @@ class Neural_Network:
 # training
 def dcdw(y, y_hat, z, a):
     dc_dyhat = -2 * (y - y_hat)
-    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z *- 1))
+    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z * - 1))
     dzdw = a
     return dc_dyhat * dyhat_dz * dzdw
 
 
 def dcda(y, y_hat, z, w):
     dc_dyhat = -2 * (y - y_hat)
-    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z *- 1))
+    dyhat_dz = ((1 + math.e ** (z * -1)) ** -2) * (math.e ** (z * - 1))
     dzda = w
     return dc_dyhat * dyhat_dz * dzda
 
@@ -110,18 +109,37 @@ def discarding_back_propagation(current_layer, prev_layer, true_value, predictio
                 weight_matrix[index][curr_neuron][prev_neuron] += 0.01
 
 
-# network initialisation
-Network = Neural_Network(input_pixels)
-overall_prediction = Network.out
-# back_propagation
-label = [1, 0]
+# extracting Image RGB values
+for num in range(0):
+    if num % 2 == 0:
+        img = Image.open(f"catsndogs/dataset/training_set/dogs/dog.{num}.jpg")
+        label = [0,1]
+    else:
+        img = Image.open(f"catsndogs/dataset/training_set/cats/cat.{num}.jpg")
+        label = [1,0]
+    img = img.resize((150, 150))
+    pixels = img.load()
+    # extracting pixels into tuples of RGB values, and separate each pixel into three input neurons in the neuron
+    # network
+    input_pixels = []
+    for row in range(img.size[0]):
+        for col in range(img.size[1]):
+            input_pixels.append(pixels[row, col])
 
-for i in range(100):
+    input_pixels = [i / 1000 for tup in input_pixels for i in tup]
+    # network initialisation
+    Network = Neural_Network(input_pixels)
+    overall_prediction = Network.out
+    # back_propagation
+
     cost1 = back_propagation(Network.Hidden3.neurons, Network.Hidden2.neurons, label, overall_prediction, 3)
     cost2 = back_propagation(Network.Hidden2.neurons, Network.Hidden1.neurons, cost1, Network.Hidden2.get_output(), 2)
     cost3 = back_propagation(Network.Hidden1.neurons, Network.input_layer.neurons, cost2, Network.Hidden1.get_output(),
-                            1)
+                             1)
     discarding_back_propagation(Network.input_layer.neurons, input_pixels, cost3, Network.input_layer.get_output(), 0)
     Network = Neural_Network(input_pixels)
-    print(f"Network_output{i}:", Network.out)
+    print(f"Network_output{num}:", Network.out)
     print("cost=", sum([(label[i] - Network.out[i]) ** 2 for i in range(2)]) / 2)
+file = open("weights.json","w")
+file.truncate()
+json.dump(weight_matrix,file)
